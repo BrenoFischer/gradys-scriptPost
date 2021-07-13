@@ -44,7 +44,7 @@ async def send_drone1_json(session):
   while True:
     lat = locations[location_index][0]
     log = locations[location_index][1]
-    data_dict = create_dict(7, 35, seq=seq, lat=lat, log=log)
+    data_dict = create_dict(7, 102, seq=seq, lat=lat, log=log)
     async with session.post(url, data=data_dict) as resp:
       response = await resp.json() 
       print(response)
@@ -76,7 +76,7 @@ async def send_drone2_json(session):
   while True:
     lat = locations[location_index][0]
     log = locations[location_index][1]
-    data_dict = create_dict(8, 35, seq=seq, lat=lat, log=log)
+    data_dict = create_dict(8, 102, seq=seq, lat=lat, log=log)
     async with session.post(url, data=data_dict) as resp:
       response = await resp.json() 
       print(response)
@@ -101,6 +101,6 @@ async def main():
     await handle_disconnection_exception()
 
 
-url = 'http://localhost:8000/post/'
+url = 'http://localhost:8000/update-drone/'
 tasks = []
 asyncio.run(main())
