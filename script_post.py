@@ -2,19 +2,20 @@ import aiohttp
 import asyncio
 from random import randint
 
+TIME_SENSOR_SLEEP = 3
 TIME_DRONE_SLEEP = 0.5
 TIME_OFF = 30
 
 async def sleep_async_rand():
-    await asyncio.sleep(randint(4,8))
+  await asyncio.sleep(randint(4,8))
 
 
 async def sleep_async(seconds):
-    await asyncio.sleep(seconds)
+  await asyncio.sleep(seconds)
 
 
-def create_dict(id, type, seq=0, lat=5.02, log=-9.02, high=10.3, data="0"):
-    return {"id": id, "type": type, "seq": seq, "lat": lat, "log": log, "high": high, "DATA": data}
+def create_dict(id, type, seq=0, lat=5.02, log=-9.02, high=10.3, data="0", device_type="uav"):
+  return {"id": id, "type": type, "seq": seq, "lat": lat, "log": log, "high": high, "DATA": data, "device": device_type}
 
 
 async def handle_disconnection_exception():
@@ -46,6 +47,23 @@ async def send_drone_json(session, id):
     await sleep_async(TIME_DRONE_SLEEP)
 
 
+async def send_sensor_json(session, id):
+  location = [-15.83855860, -47.92783500]
+  lat = location[0]
+  log = location[1]
+  seq = 0
+  while True:
+    data_dict = create_dict(id, 102, seq=seq, lat=lat, log=log, device_type="sensor")
+    async with session.post(url, data=data_dict) as resp:
+      response = await resp.json() 
+      print(response)
+
+    seq += 1
+    if seq >= 255:
+      seq = 0
+    await sleep_async(TIME_SENSOR_SLEEP)
+
+
 async def send_drone1_json(session):
   await send_drone_json(session, 1)
 
@@ -63,14 +81,19 @@ async def send_drone4_json(session):
   await send_drone_json(session, 4)
 
 
+async def send_sensor1_json(session):
+  await send_sensor_json(session, 5)
+
+
 async def main():
   async with aiohttp.ClientSession() as session:
     writer_drone1 = asyncio.create_task(send_drone1_json(session))
     writer_drone2 = asyncio.create_task(send_drone2_json(session))
-    writer_drone3 = asyncio.create_task(send_drone3_json(session))
-    writer_drone4 = asyncio.create_task(send_drone4_json(session))
+    writer_sensor1 = asyncio.create_task(send_sensor1_json(session))
+    #writer_drone3 = asyncio.create_task(send_drone3_json(session))
+    #writer_drone4 = asyncio.create_task(send_drone4_json(session))
     
-    tasks.extend([writer_drone1, writer_drone2, writer_drone3, writer_drone4])
+    tasks.extend([writer_drone1, writer_drone2, writer_sensor1])#, writer_drone3, writer_drone4])
     await asyncio.gather(*tasks)
 
     await handle_disconnection_exception()
