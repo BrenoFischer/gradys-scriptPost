@@ -14,8 +14,8 @@ async def sleep_async(seconds):
   await asyncio.sleep(seconds)
 
 
-def create_dict(id, type, seq=0, lat=5.02, log=-9.02, high=10.3, data="0", device_type="uav"):
-  return {"id": id, "type": type, "seq": seq, "lat": lat, "log": log, "high": high, "DATA": data, "device": device_type}
+def create_dict(id, type, seq=0, lat=5.02, log=-9.02, high=10.3, data="0", device_type="uav", ip="http://127.0.0.1:8000/"):
+  return {"id": id, "type": type, "seq": seq, "lat": lat, "log": log, "high": high, "DATA": data, "device": device_type, "ip": ip}
 
 
 async def handle_disconnection_exception():
@@ -99,7 +99,7 @@ async def main():
     await handle_disconnection_exception()
 
 
-url = 'http://localhost:8000/update-drone/'
+url = 'http://127.0.0.1:8000/update-info/'
 tasks = []
 path=[
     #[-15.840068,-47.926633],
