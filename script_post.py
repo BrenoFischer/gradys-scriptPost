@@ -86,7 +86,7 @@ async def send_sensor1_json(session):
 
 
 async def main():
-  async with aiohttp.ClientSession() as session:
+  async with aiohttp.ClientSession(trust_env=True) as session:
     writer_drone1 = asyncio.create_task(send_drone1_json(session))
     writer_drone2 = asyncio.create_task(send_drone2_json(session))
     writer_sensor1 = asyncio.create_task(send_sensor1_json(session))
